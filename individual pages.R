@@ -7,8 +7,11 @@ library(stringr)
 library(tidyverse)
 library(tidyr)
 
-### grab a list of all the URLs for DHS surveys
+#=======================================
+# go to site with a list of all surveys and grab each survey URL
+#=======================================
 
+### store the main link and read it
 link <- "https://dhsprogram.com/What-We-Do/survey-search.cfm?pgtype=main&SrvyTp=country"
 
 webpage <- read_html(link)
@@ -16,14 +19,14 @@ webpage <- read_html(link)
 ### clean data of survey URLs
 table <- html_nodes(webpage, xpath = "//td/a") %>% html_attr("href") %>% plyr::ldply() %>% filter(!str_detect(V1, 'javascript')) %>% mutate(V1 = str_replace_all(V1, "cfm2", "cfm")) %>% select(links=V1) %>% mutate(keep_dummy = ifelse(grepl('/methodology/survey/survey-display-', links), 1, 0)) %>% filter(keep_dummy==1) %>% dplyr::mutate(rowid = row_number())
 
-### limit data
-#table <- table %>% filter(rowid<=15)
-
-###
-
+### store complete survey URLs
 all_urls <- paste0("https://dhsprogram.com",table$links) %>% unique( table$links )
 
-### go to each survey + clean details about each survey
+#=======================================
+### go to each survey URL and grab details about each survey
+#=======================================
+
+# note: this section adapts code from cobrienudry's webscrape tutorial https://github.com/cobrienudry/webscrape
 
 dat <- list()
 
