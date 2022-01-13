@@ -265,8 +265,6 @@ for( i in all_words ) {
   var_label(extract5[[name]]) <- i
 }
 
-all_words_test <- c("HIV","Alcohol consumption")
-
 ### final clean
 
 extract5 <- extract5 %>% select(-extract)
